@@ -10,8 +10,13 @@ df=pd.read_csv('spam.csv',encoding='latin-1')
 
 
 # Data Cleaning Part
-df.drop(columns=['Unnamed: 2','Unnamed: 3','Unnamed: 4'],inplace=True)
-df.rename(columns={'v1':'target','v2':'text'},inplace=True)
+df.drop(
+    columns=['Unnamed: 2','Unnamed: 3','Unnamed: 4'],inplace=True
+    )
+df.rename(
+    columns={'v1':'target','v2':'text'},
+    inplace=True
+    )
 from sklearn.preprocessing import LabelEncoder
 encoder=LabelEncoder()
 df['target']=encoder.fit_transform(df['target'])
@@ -215,19 +220,28 @@ mnb = MultinomialNB()
 etc = ExtraTreesClassifier(n_estimators=50, random_state=2)
 
 from sklearn.ensemble import VotingClassifier
+
 voting = VotingClassifier(estimators=[('svm', svc), ('nb', mnb), ('et', etc)],voting='soft')
+voting.fit(X_train, y_train)
 y_pred = voting.predict(X_test)
 print("Accuracy",accuracy_score(y_test,y_pred))
 print("Precision",precision_score(y_test,y_pred))
+
 # Applying stacking
+
 estimators=[('svm', svc), ('nb', mnb), ('et', etc)]
 final_estimator=RandomForestClassifier()
+
 from sklearn.ensemble import StackingClassifier
+
 clf = StackingClassifier(estimators=estimators, final_estimator=final_estimator)
+
 clf.fit(X_train,y_train)
 y_pred = clf.predict(X_test)
 print("Accuracy",accuracy_score(y_test,y_pred))
 print("Precision",precision_score(y_test,y_pred))
+
+
 import pickle
 pickle.dump(tfidf,open('vectorizer.pkl','wb'))
 pickle.dump(mnb,open('model.pkl','wb'))
